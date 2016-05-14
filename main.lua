@@ -27,7 +27,7 @@ com.renoise.ExampleTool.xrnx/main.lua
 -- to create a renoise.Document object which holds the options that we want to
 -- store/restore
 local options = renoise.Document.create("QZPreferences") {
-  show_debug_prints = true
+  show_debug_prints = false
 }
 
 -- then we simply register this document as the main preferences for the tool:
@@ -52,16 +52,9 @@ renoise.tool().preferences = options
 -- folder for a complete reference.
 
 renoise.tool():add_keybinding {
-  name = "Global:Tools:Example Script Shortcut",
+  name = "Global:QZ:Play next pattern in sequencer",
   invoke = function(repeated)
     if (not repeated) then -- we ignore soft repeated keys here
-      renoise.app():show_prompt(
-        "Congrats!",
-        "You've pressed a magic keyboard combo "..
-        "which was defined by a script example tool.",
-        {"OK?"}
-      )
-
       play_next_pattern_in_sequencer()
     end
   end
@@ -82,27 +75,29 @@ renoise.tool():add_keybinding {
 -- and more descriptions of the passed message parameter.
 
 renoise.tool():add_midi_mapping{
-  name = "com.renoise.ExampleTool:Example MIDI Mapping",
-  invoke = function(message)
+  name = "QZ:Play next pattern in sequencer",
+  invoke = function(msg)
     if (options.show_debug_prints.value) then
       print("com.renoise.ExampleTool: >> got midi_mapping message :")
 
-      print(("  message:is_trigger(): %s)"):format(
-        message:is_trigger() and "yes" or "no"))
-      print(("  message:is_switch(): %s)"):format(
-        message:is_switch() and "yes" or "no"))
-      print(("  message:is_rel_value(): %s)"):format(
-        message:is_rel_value() and "yes" or "no"))
-      print(("  message:is_abs_value(): %s)"):format(
-        message:is_abs_value() and "yes" or "no"))
+      print(("  msg:is_trigger(): %s)"):format(
+        msg:is_trigger() and "yes" or "no"))
+      print(("  msg:is_switch(): %s)"):format(
+        msg:is_switch() and "yes" or "no"))
+      print(("  msg:is_rel_value(): %s)"):format(
+        msg:is_rel_value() and "yes" or "no"))
+      print(("  msg:is_abs_value(): %s)"):format(
+        msg:is_abs_value() and "yes" or "no"))
 
-      print(("  message.int_value: %d)"):format(
-        message.int_value))
-      print(("  message.boolean_value: %s)"):format(
-        message.boolean_value and "true" or "false"))
+      print(("  msg.int_value: %d)"):format(
+        msg.int_value))
+      print(("  msg.boolean_value: %s)"):format(
+        msg.boolean_value and "true" or "false"))
     end
 
-    play_next_pattern_in_sequencer()
+    if msg:is_trigger() or ((msg:is_abs_value() or msg:is_rel_value()) and msg.int_value > 0) then
+      play_next_pattern_in_sequencer()
+    end
   end
 }
 
@@ -146,11 +141,7 @@ end
 -- show_dialog
 
 function play_next_pattern_in_sequencer()
-  renoise.app():show_warning(
-    ("This example does nothing more beside showing a warning message " ..
-     "and the current BPM, which has an amazing value of '%s'!"):format(
-     renoise.song().transport.bpm)
-  )
+  print("play next pattern in sequencer")
 end
 
 
