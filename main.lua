@@ -141,14 +141,55 @@ end
 -- show_dialog
 
 function play_next_pattern_in_sequencer()
-  print("play next pattern in sequencer")
+  local t = renoise.song().transport
+  local pos = t.playback_pos
+
+  pos.sequence = pos.sequence + 1
+  pos.line = 1
+
+  if (options.show_debug_prints.value) then
+    print("play next pattern in sequencer")
+  end
+
+  playback_pos_jump(pos)
 end
 
+-- makes the playback jump to another position.
+--
+-- this is different than trigger_sequence, because it will keep the currently
+-- playing samples playing.
+-- Also,if the song is not playing, we start the playback.
+_playback_target_pos = {
+  sequence = 1,
+  line = 1
+}
+function playback_pos_jump(pos)
+
+  -- The playback_pos change we want to do can take a while, so save it in a
+  -- global variable and add an idle notifier that will start the playback as
+  -- soon as it's done.
+  _playback_target_pos = {
+    sequence = pos.sequence,
+    line = pos.line
+  }
+  renoise.tool().app_idle_observable:add_notifier(wait_for_playback_pos_change)
+  renoise.song().transport.playback_pos = pos
+end
+
+function wait_for_playback_pos_change()
+  local t = renoise.song().transport
+
+  -- We check if the playback_pos already is in the right position
+  if t.playback_pos.line == _playback_target_pos.line and t.playback_pos.sequence == _playback_target_pos.sequence then
+    renoise.tool().app_idle_observable:remove_notifier(wait_for_playback_pos_change)
+    t:start(renoise.Transport.PLAYMODE_CONTINUE_PATTERN)
+  end
+end
 
 -- handle_auto_reload_debug_notification
 
 function handle_auto_reload_debug_notification()
   if (options.show_debug_prints.value) then
-    print("com.renoise.ExampleTool: ** auto_reload_debug notification")
+    print("bystrano.QZ.QZ: ** auto_reload_debug notification")
   end
 end
