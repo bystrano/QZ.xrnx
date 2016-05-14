@@ -33,23 +33,23 @@
   <!-- You don't have to use prefixes like com/org and so on, but please try to use -->
   <!-- something personal, like your name, or your homepage domain or company name in -->
   <!-- the Id in order to make it as unique as possible. -->
-  <Id>com.renoise.ExampleTool</Id>
+  <Id>bystrano.QZ</Id>
 
 
   <!-- The author field is only used in descriptions of the tools, or in error messages  -->
   <!-- from the script. Providing an email is not necessary, but recommended if you -->
   <!-- want feedback. -->
-  <Author>taktik [taktik@renoise.com]</Author>
+  <Author>bystrano [bystrano@gmx.ch]</Author>
 
   <!-- Main topic, tag(s) of this tool, like "Pattern Editor, Sample Editor" and so on. -->
   <!-- Separate multiple categories with commas. -->
-  <Category>Tool Development</Category>
+  <Category>Sequencer</Category>
 
   <!-- Name of the tool, as visible to the user -->
-  <Name>Renoise Scripting Tool Example</Name>
+  <Name>Some additions inspired by QLab</Name>
 
   <!-- Description of the tool as visible to the users -->
-  <Description>A XRNX tool which describes step by step and in depth how to create Renoise XRNX tools. Please have a look at the source files of this tool (manifest.xml and main.lua) for more info. Also creates a new menu 'Example Tool' in the global 'Tools' menu.</Description>
+  <Description>Adds a "goto next pattern" to play the next pattern from the beginning. I use it to trigger renoise patterns a little bit like cues in QLab.</Description>
 
 
   <!-- === OPTIONAL ENTRIES === -->
@@ -57,10 +57,10 @@
   <!-- Optional relative path and name of an icon file, which may be shown -->
   <!-- in tool browsers. The icon must be provided as PNG file and should have -->
   <!-- a size of 128x128 pixels -->
-  <Icon>icon.png</Icon>
+  <!-- <Icon>icon.png</Icon> -->
 
   <!-- Optional http:// based URL of the tools homepage, if available... -->
-  <Homepage>http://scripting.renoise.com</Homepage>
+  <!-- <Homepage>http://scripting.renoise.com</Homepage> -->
 
    <!-- Supported platforms for the tool. When not specified, its assumed that the tool -->
    <!-- is platform independent, else one or more of "Windows, Mac, Linux" are expected -->
