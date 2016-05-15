@@ -145,6 +145,10 @@ function play_next_pattern_in_sequencer()
   local pos = t.playback_pos
 
   pos.sequence = pos.sequence + 1
+  if pos.sequence > renoise.song().transport.song_length.sequence then
+    pos.sequence = 1
+  end
+
   pos.line = 1
 
   if (options.show_debug_prints.value) then
