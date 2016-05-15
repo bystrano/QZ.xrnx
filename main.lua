@@ -78,7 +78,7 @@ renoise.tool():add_midi_mapping{
   name = "QZ:Play next pattern in sequencer",
   invoke = function(msg)
     if (options.show_debug_prints.value) then
-      print("com.renoise.ExampleTool: >> got midi_mapping message :")
+      print("bystrano.QZ.QZ >> got midi_mapping message :")
 
       print(("  msg:is_trigger(): %s)"):format(
         msg:is_trigger() and "yes" or "no"))
@@ -148,7 +148,7 @@ function play_next_pattern_in_sequencer()
   pos.line = 1
 
   if (options.show_debug_prints.value) then
-    print("play next pattern in sequencer")
+    print("bystrano.QZ.QZ: play next pattern in sequencer")
   end
 
   playback_pos_jump(pos)
