@@ -176,7 +176,14 @@ function playback_pos_jump(pos)
     sequence = pos.sequence,
     line = pos.line
   }
-  renoise.tool().app_idle_observable:add_notifier(wait_for_playback_pos_change)
+
+  local idle_observable = renoise.tool().app_idle_observable
+  -- new calls cancel previous ones
+  if idle_observable:has_notifier(wait_for_playback_pos_change) then
+    idle_observable:remove_notifier(wait_for_playback_pos_change)
+  end
+
+  idle_observable:add_notifier(wait_for_playback_pos_change)
   renoise.song().transport.playback_pos = pos
 end
 
