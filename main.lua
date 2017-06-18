@@ -7,7 +7,8 @@ bystrano.QZ.QZ.xrnx/main.lua
 --------------------------------------------------------------------------------
 
 local options = renoise.Document.create("QZPreferences") {
-  show_debug_prints = false
+  show_debug_prints = false,
+  repeat_interval = 200
 }
 
 renoise.tool().preferences = options
@@ -53,7 +54,7 @@ renoise.tool():add_midi_mapping{
     end
 
     if msg:is_trigger() or ((msg:is_abs_value() or msg:is_rel_value()) and msg.int_value > 0) then
-      play_next_pattern_in_sequencer()
+      play_next_pattern_in_sequencer_antirepeat()
     end
   end
 }
@@ -82,6 +83,28 @@ function play_next_pattern_in_sequencer()
 
   playback_pos_jump(pos)
 end
+
+-- This is a rate-limited version of play_next_pattern_in_sequencer. We use it
+-- to prevent double triggering via MIDI.
+_repeat_lock = false
+function play_next_pattern_in_sequencer_antirepeat()
+
+  if not _repeat_lock then
+    _repeat_lock = true
+    renoise.tool():add_timer(repeat_unlock, options.repeat_interval.value)
+    play_next_pattern_in_sequencer()
+  end
+end
+
+function repeat_unlock()
+
+  if renoise.tool():has_timer(repeat_unlock) then
+    renoise.tool():remove_timer(repeat_unlock)
+  end
+
+  _repeat_lock = false
+end
+
 
 -- makes the playback jump to another position.
 --
