@@ -35,23 +35,7 @@ renoise.tool():add_keybinding {
 renoise.tool():add_midi_mapping{
   name = "QZ:Play next pattern in sequencer",
   invoke = function(msg)
-    if (options.show_debug_prints.value) then
-      print("bystrano.QZ.QZ >> got midi_mapping message :")
-
-      print(("  msg:is_trigger(): %s)"):format(
-        msg:is_trigger() and "yes" or "no"))
-      print(("  msg:is_switch(): %s)"):format(
-        msg:is_switch() and "yes" or "no"))
-      print(("  msg:is_rel_value(): %s)"):format(
-        msg:is_rel_value() and "yes" or "no"))
-      print(("  msg:is_abs_value(): %s)"):format(
-        msg:is_abs_value() and "yes" or "no"))
-
-      print(("  msg.int_value: %d)"):format(
-        msg.int_value))
-      print(("  msg.boolean_value: %s)"):format(
-        msg.boolean_value and "true" or "false"))
-    end
+    dbg_print_midi_msg(msg)
 
     if msg:is_trigger() or ((msg:is_abs_value() or msg:is_rel_value()) and msg.int_value > 0) then
       play_next_pattern_in_sequencer_antirepeat()
@@ -77,9 +61,7 @@ function play_next_pattern_in_sequencer()
 
   pos.line = 1
 
-  if (options.show_debug_prints.value) then
-    print("bystrano.QZ.QZ: play next pattern in sequencer")
-  end
+  dbg_print("play next pattern in sequencer")
 
   playback_pos_jump(pos)
 end
@@ -132,6 +114,7 @@ function playback_pos_jump(pos)
   end
   idle_observable:add_notifier(wait_for_playback_pos_change)
 
+  dbg_print(("move needle to seq %d line %d"):format(pos.sequence, pos.line))
   renoise.song().transport.playback_pos = pos
 end
 
@@ -141,6 +124,8 @@ function wait_for_playback_pos_change()
   -- We check if the playback_pos already is in the right position
   if t.playback_pos.line == _playback_target_pos.line and t.playback_pos.sequence == _playback_target_pos.sequence then
     renoise.tool().app_idle_observable:remove_notifier(wait_for_playback_pos_change)
+
+    dbg_print("(re)start the sequencer")
     t:start(renoise.Transport.PLAYMODE_CONTINUE_PATTERN)
   end
 end
@@ -155,7 +140,31 @@ _AUTO_RELOAD_DEBUG = function()
 end
 
 function handle_auto_reload_debug_notification()
+
+  dbg_print("** auto_reload_debug notification")
+end
+
+function dbg_print(msg)
+
   if (options.show_debug_prints.value) then
-    print("bystrano.QZ.QZ: ** auto_reload_debug notification")
+    print(("bystrano.QZ.QZ: %s"):format(msg))
   end
+end
+
+function dbg_print_midi_msg(msg)
+
+  dbg_print(">> got midi_mapping message :")
+
+  dbg_print(("  msg:is_trigger(): %s"):format(
+      msg:is_trigger() and "yes" or "no"))
+  dbg_print(("  msg:is_switch(): %s"):format(
+      msg:is_switch() and "yes" or "no"))
+  dbg_print(("  msg:is_rel_value(): %s"):format(
+      msg:is_rel_value() and "yes" or "no"))
+  dbg_print(("  msg:is_abs_value(): %s"):format(
+      msg:is_abs_value() and "yes" or "no"))
+  dbg_print(("  msg.int_value: %d"):format(
+      msg.int_value))
+  dbg_print(("  msg.boolean_value: %s"):format(
+      msg.boolean_value and "true" or "false"))
 end
