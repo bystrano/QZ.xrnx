@@ -1,0 +1,4 @@
+initBang bang;
+renoise play;
+500 renoise next;
+500 renoise stop;
