@@ -63,7 +63,7 @@ function play_next_pattern_in_sequencer()
 
   dbg_print("play next pattern in sequencer")
 
-  playback_pos_jump(pos)
+  t:start_at(pos)
 end
 
 -- This is a rate-limited version of play_next_pattern_in_sequencer. We use it
@@ -85,49 +85,6 @@ function repeat_unlock()
   end
 
   _repeat_lock = false
-end
-
-
--- makes the playback jump to another position.
---
--- this is different than trigger_sequence, because it will keep the currently
--- playing samples playing.
--- Also,if the song is not playing, we start the playback.
-_playback_target_pos = {
-  sequence = 1,
-  line = 1
-}
-function playback_pos_jump(pos)
-
-  -- The playback_pos change we want to do can take a while, so save it in a
-  -- global variable and add an idle notifier that will start the playback as
-  -- soon as it's done.
-  _playback_target_pos = {
-    sequence = pos.sequence,
-    line = pos.line
-  }
-
-  local idle_observable = renoise.tool().app_idle_observable
-  -- new calls cancel previous ones
-  if idle_observable:has_notifier(wait_for_playback_pos_change) then
-    idle_observable:remove_notifier(wait_for_playback_pos_change)
-  end
-  idle_observable:add_notifier(wait_for_playback_pos_change)
-
-  dbg_print(("move needle to seq %d line %d"):format(pos.sequence, pos.line))
-  renoise.song().transport.playback_pos = pos
-end
-
-function wait_for_playback_pos_change()
-  local t = renoise.song().transport
-
-  -- We check if the playback_pos already is in the right position
-  if t.playback_pos.line == _playback_target_pos.line and t.playback_pos.sequence == _playback_target_pos.sequence then
-    renoise.tool().app_idle_observable:remove_notifier(wait_for_playback_pos_change)
-
-    dbg_print("(re)start the sequencer")
-    t:start(renoise.Transport.PLAYMODE_CONTINUE_PATTERN)
-  end
 end
 
 
